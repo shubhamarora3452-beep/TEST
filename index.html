@@ -3,160 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DEXPERIENCE Team Registration</title>
+    <title>3DEXP Team Management</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; text-align: center; }
-        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; cursor: pointer; border: none; background: none; font-size: 16px; font-weight: bold; color: #7f8c8d; }
-        .tab.active { color: #3498db; border-bottom: 3px solid #3498db; }
-        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .full-width { grid-column: span 2; }
-        label { font-size: 14px; font-weight: bold; color: #34495e; display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button#submitBtn { grid-column: span 2; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        button#submitBtn:hover { background: #219150; }
-        #message { margin-top: 20px; text-align: center; font-weight: bold; }
+        :root { --primary: #005686; --success: #27ae60; --danger: #e74c3c; --neutral: #7f8c8d; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab { padding: 12px 24px; cursor: pointer; border: none; background: #eee; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+        .tab.active[data-type="New"] { background: var(--success); color: white; }
+        .tab.active[data-type="Remove"] { background: var(--danger); color: white; }
+        .tab.active[data-type="Keep"] { background: var(--primary); color: white; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full { grid-column: span 2; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #333; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button#submitBtn { width: 100%; grid-column: span 2; padding: 16px; border: none; border-radius: 8px; color: white; font-size: 1.1em; cursor: pointer; font-weight: bold; }
+        #status { margin-top: 20px; text-align: center; padding: 15px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Team License Registration</h2>
-    
-    <div class="tabs">
-        <button class="tab active" onclick="setSection('New', this)">Add Member</button>
-        <button class="tab" onclick="setSection('Remove', this)">Remove Member</button>
-        <button class="tab" onclick="setSection('Keep', this)">Keep Member</button>
+    <div class="header">
+        <h2>Team Member Management</h2>
+        <p>Update your 3DEXPERIENCE team license information</p>
     </div>
 
-    <form id="registrationForm">
+    <div class="tabs">
+        <button class="tab active" data-type="New" onclick="switchTab('New', this)">+ Add Member</button>
+        <button class="tab" data-type="Remove" onclick="switchTab('Remove', this)">- Remove Member</button>
+        <button class="tab" data-type="Keep" onclick="switchTab('Keep', this)">≡ Keep Member</button>
+    </div>
+
+    <form id="teamForm">
         <input type="hidden" id="action" name="action" value="New">
         
-        <div class="full-width">
-            <label>Group or Team Name / Class Name</label>
-            <input type="text" name="teamName" required>
+        <div class="full">
+            <label>Team/Class Name*</label>
+            <input type="text" name="teamName" placeholder="e.g. Hydro Team KU Leuven" required>
         </div>
-        
+
         <div>
-            <label>School / Organization Name</label>
+            <label>Organization Name*</label>
             <input type="text" name="orgName" required>
         </div>
-        
+
         <div>
-            <label>School / Organization City</label>
+            <label>Organization City*</label>
             <input type="text" name="orgCity" required>
         </div>
-        
+
         <div>
-            <label>School / Organization Country</label>
-            <select name="orgCountry" id="orgCountry" required>
-                <option value="">Select Country...</option>
-            </select>
+            <label>Organization Country*</label>
+            <input type="text" name="orgCountry" required>
         </div>
-        
+
         <div>
-            <label>User Role</label>
-            <select name="role" required>
+            <label>User Role*</label>
+            <select name="role">
                 <option value="Team Member">Team Member</option>
                 <option value="Leader">Leader</option>
             </select>
         </div>
-        
+
         <div>
-            <label>First Name</label>
+            <label>First Name*</label>
             <input type="text" name="firstName" required>
         </div>
-        
+
         <div>
-            <label>Last Name</label>
+            <label>Last Name*</label>
             <input type="text" name="lastName" required>
         </div>
-        
+
         <div>
-            <label>18 years or older?</label>
-            <select name="isAdult" required>
+            <label>18 years or older?*</label>
+            <select name="isAdult">
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
             </select>
         </div>
-        
+
         <div>
-            <label>Email Address (3DEXPERIENCE ID)</label>
+            <label>Email (3DEXP ID)*</label>
             <input type="email" name="email" required>
         </div>
-        
-        <div class="full-width">
-            <label>User Country</label>
-            <select name="userCountry" id="userCountry" required>
-                <option value="">Select Country...</option>
-            </select>
+
+        <div class="full">
+            <label>User Country*</label>
+            <input type="text" name="userCountry" required>
         </div>
 
-        <button type="submit" id="submitBtn">Submit Information</button>
+        <button type="submit" id="submitBtn" style="background: var(--success);">Submit Member</button>
     </form>
-    <div id="message"></div>
+    <div id="status"></div>
 </div>
 
 <script>
-    // List of countries extracted from your data
-    const countries = ["AFGHANISTAN", "ALAND ISLANDS", "ALBANIA", "ALGERIA", "AMERICAN SAMOA", "ANDORRA", "ANGOLA", "ANGUILLA", "ANTARCTICA", "ARGENTINA", "AUSTRALIA", "AUSTRIA", "BELGIUM", "BRAZIL", "CANADA", "CHINA", "DENMARK", "FINLAND", "FRANCE", "GERMANY", "INDIA", "ITALY", "JAPAN", "MEXICO", "NETHERLANDS", "NORWAY", "POLAND", "SPAIN", "SWEDEN", "SWITZERLAND", "UNITED KINGDOM", "UNITED STATES"]; // Add more as needed
+    // 1. UPDATE THIS URL AFTER DEPLOYING APPS SCRIPT
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw5Mb_ivFdo-mjrm2wWsavvV30k94tN9gCTes31QQD3lQaSEkRAZCR9mAp3xEwhXW6M/exec";
 
-    // Populate dropdowns
-    const countrySelects = [document.getElementById('orgCountry'), document.getElementById('userCountry')];
-    countries.forEach(country => {
-        countrySelects.forEach(select => {
-            const opt = document.createElement('option');
-            opt.value = country;
-            opt.innerHTML = country;
-            select.appendChild(opt);
-        });
-    });
-
-    function setSection(val, btn) {
-        document.getElementById('action').value = val;
+    function switchTab(type, el) {
+        document.getElementById('action').value = type;
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
+        el.classList.add('active');
         
-        const btnSubmit = document.getElementById('submitBtn');
-        if(val === 'New') btnSubmit.style.background = '#27ae60';
-        else if(val === 'Remove') btnSubmit.style.background = '#e74c3c';
-        else btnSubmit.style.background = '#3498db';
+        const btn = document.getElementById('submitBtn');
+        if(type === 'New') btn.style.background = 'var(--success)';
+        else if(type === 'Remove') btn.style.background = 'var(--danger)';
+        else btn.style.background = 'var(--primary)';
+        btn.innerText = type + ' Member';
     }
 
-    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    document.getElementById('teamForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const msg = document.getElementById('message');
-        const submitBtn = document.getElementById('submitBtn');
-        msg.innerHTML = "Submitting...";
-        submitBtn.disabled = true;
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        btn.disabled = true;
+        btn.innerText = "Processing...";
 
-        const formData = new FormData(this);
+        const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
 
-        // REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
-        const scriptURL = 'YOUR_GAS_URL_HERE';
-
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors', // Essential for GAS
-            cache: 'no-cache',
-            body: JSON.stringify(data)
-        })
-        .then(() => {
-            msg.style.color = "green";
-            msg.innerHTML = "Success! Information submitted to the database.";
-            this.reset();
-            submitBtn.disabled = false;
-        })
-        .catch(error => {
-            msg.style.color = "red";
-            msg.innerHTML = "Error: " + error;
-            submitBtn.disabled = false;
-        });
+        try {
+            // Using fetch with 'no-cors' for Google Script redirects
+            await fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                cache: "no-cache",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            
+            status.style.display = "block";
+            status.style.background = "#d4edda";
+            status.innerHTML = "✅ Success! Sheet updated.";
+            e.target.reset();
+        } catch (err) {
+            status.style.display = "block";
+            status.style.background = "#f8d7da";
+            status.innerHTML = "❌ Error connecting to Sheet.";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Submit Member";
+        }
     });
 </script>
-
 </body>
 </html>

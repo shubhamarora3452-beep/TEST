@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3DEXPERIENCE Team Registration</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; text-align: center; }
+        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; cursor: pointer; border: none; background: none; font-size: 16px; font-weight: bold; color: #7f8c8d; }
+        .tab.active { color: #3498db; border-bottom: 3px solid #3498db; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 2; }
+        label { font-size: 14px; font-weight: bold; color: #34495e; display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button#submitBtn { grid-column: span 2; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button#submitBtn:hover { background: #219150; }
+        #message { margin-top: 20px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Team License Registration</h2>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="setSection('New', this)">Add Member</button>
+        <button class="tab" onclick="setSection('Remove', this)">Remove Member</button>
+        <button class="tab" onclick="setSection('Keep', this)">Keep Member</button>
+    </div>
+
+    <form id="registrationForm">
+        <input type="hidden" id="action" name="action" value="New">
+        
+        <div class="full-width">
+            <label>Group or Team Name / Class Name</label>
+            <input type="text" name="teamName" required>
+        </div>
+        
+        <div>
+            <label>School / Organization Name</label>
+            <input type="text" name="orgName" required>
+        </div>
+        
+        <div>
+            <label>School / Organization City</label>
+            <input type="text" name="orgCity" required>
+        </div>
+        
+        <div>
+            <label>School / Organization Country</label>
+            <select name="orgCountry" id="orgCountry" required>
+                <option value="">Select Country...</option>
+            </select>
+        </div>
+        
+        <div>
+            <label>User Role</label>
+            <select name="role" required>
+                <option value="Team Member">Team Member</option>
+                <option value="Leader">Leader</option>
+            </select>
+        </div>
+        
+        <div>
+            <label>First Name</label>
+            <input type="text" name="firstName" required>
+        </div>
+        
+        <div>
+            <label>Last Name</label>
+            <input type="text" name="lastName" required>
+        </div>
+        
+        <div>
+            <label>18 years or older?</label>
+            <select name="isAdult" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        
+        <div>
+            <label>Email Address (3DEXPERIENCE ID)</label>
+            <input type="email" name="email" required>
+        </div>
+        
+        <div class="full-width">
+            <label>User Country</label>
+            <select name="userCountry" id="userCountry" required>
+                <option value="">Select Country...</option>
+            </select>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit Information</button>
+    </form>
+    <div id="message"></div>
+</div>
+
+<script>
+    // List of countries extracted from your data
+    const countries = ["AFGHANISTAN", "ALAND ISLANDS", "ALBANIA", "ALGERIA", "AMERICAN SAMOA", "ANDORRA", "ANGOLA", "ANGUILLA", "ANTARCTICA", "ARGENTINA", "AUSTRALIA", "AUSTRIA", "BELGIUM", "BRAZIL", "CANADA", "CHINA", "DENMARK", "FINLAND", "FRANCE", "GERMANY", "INDIA", "ITALY", "JAPAN", "MEXICO", "NETHERLANDS", "NORWAY", "POLAND", "SPAIN", "SWEDEN", "SWITZERLAND", "UNITED KINGDOM", "UNITED STATES"]; // Add more as needed
+
+    // Populate dropdowns
+    const countrySelects = [document.getElementById('orgCountry'), document.getElementById('userCountry')];
+    countries.forEach(country => {
+        countrySelects.forEach(select => {
+            const opt = document.createElement('option');
+            opt.value = country;
+            opt.innerHTML = country;
+            select.appendChild(opt);
+        });
+    });
+
+    function setSection(val, btn) {
+        document.getElementById('action').value = val;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const btnSubmit = document.getElementById('submitBtn');
+        if(val === 'New') btnSubmit.style.background = '#27ae60';
+        else if(val === 'Remove') btnSubmit.style.background = '#e74c3c';
+        else btnSubmit.style.background = '#3498db';
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const msg = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+        msg.innerHTML = "Submitting...";
+        submitBtn.disabled = true;
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        // REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+        const scriptURL = 'YOUR_GAS_URL_HERE';
+
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Essential for GAS
+            cache: 'no-cache',
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            msg.style.color = "green";
+            msg.innerHTML = "Success! Information submitted to the database.";
+            this.reset();
+            submitBtn.disabled = false;
+        })
+        .catch(error => {
+            msg.style.color = "red";
+            msg.innerHTML = "Error: " + error;
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>

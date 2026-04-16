@@ -3,153 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3DEXP Team Management</title>
+    <title>Multi-Member Team Registration</title>
     <style>
-        :root { --primary: #005686; --success: #27ae60; --danger: #e74c3c; --neutral: #7f8c8d; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .tab { padding: 12px 24px; cursor: pointer; border: none; background: #eee; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-        .tab.active[data-type="New"] { background: var(--success); color: white; }
-        .tab.active[data-type="Remove"] { background: var(--danger); color: white; }
-        .tab.active[data-type="Keep"] { background: var(--primary); color: white; }
-        form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full { grid-column: span 2; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #333; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button#submitBtn { width: 100%; grid-column: span 2; padding: 16px; border: none; border-radius: 8px; color: white; font-size: 1.1em; cursor: pointer; font-weight: bold; }
-        #status { margin-top: 20px; text-align: center; padding: 15px; border-radius: 8px; display: none; }
+        :root { --primary: #005686; --success: #27ae60; --danger: #e74c3c; }
+        body { font-family: sans-serif; background: #f4f7f9; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        .tabs { margin-bottom: 15px; }
+        .tab { padding: 10px 20px; cursor: pointer; border: 1px solid #ddd; background: #fff; }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; font-size: 0.9em; }
+        th { background: #f4f4f4; }
+        .btn-add { background: #34495e; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px; grid-column: 1 / -1; font-weight: bold; }
+        .btn-submit { background: var(--success); color: white; width: 100%; padding: 15px; border: none; font-size: 1.1em; margin-top: 20px; cursor: pointer; border-radius: 8px; display: none; }
+        .remove-row { color: var(--danger); cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h2>Team Member Management</h2>
-        <p>Update your 3DEXPERIENCE team license information</p>
+    <h2>Team Management Dashboard</h2>
+    <p>1. Add organization details → 2. Add members to your draft list → 3. Submit all.</p>
+
+    <div class="input-group" style="margin-bottom: 20px; background: #eef6fc;">
+        <input type="text" id="teamName" placeholder="Team Name" required>
+        <input type="text" id="orgName" placeholder="Organization Name">
+        <input type="text" id="orgCity" placeholder="City">
+        <input type="text" id="orgCountry" placeholder="Country">
     </div>
 
     <div class="tabs">
-        <button class="tab active" data-type="New" onclick="switchTab('New', this)">+ Add Member</button>
-        <button class="tab" data-type="Remove" onclick="switchTab('Remove', this)">- Remove Member</button>
-        <button class="tab" data-type="Keep" onclick="switchTab('Keep', this)">≡ Keep Member</button>
+        <button class="tab active" onclick="setAction('New', this)">Add New</button>
+        <button class="tab" onclick="setAction('Remove', this)">Remove Member</button>
+        <button class="tab" onclick="setAction('Keep', this)">Keep Member</button>
     </div>
 
-    <form id="teamForm">
-        <input type="hidden" id="action" name="action" value="New">
-        
-        <div class="full">
-            <label>Team/Class Name*</label>
-            <input type="text" name="teamName" placeholder="e.g. Hydro Team KU Leuven" required>
-        </div>
+    <div class="input-group" id="memberInputArea">
+        <select id="role"><option>Team Member</option><option>Leader</option></select>
+        <input type="text" id="fName" placeholder="First Name">
+        <input type="text" id="lName" placeholder="Last Name">
+        <input type="email" id="email" placeholder="Email (3DEXP ID)">
+        <select id="adult"><option value="Yes">18+</option><option value="No">Minor</option></select>
+        <input type="text" id="uCountry" placeholder="User Country">
+        <button class="btn-add" onclick="addRowToList()">+ Add to Draft List</button>
+    </div>
 
-        <div>
-            <label>Organization Name*</label>
-            <input type="text" name="orgName" required>
-        </div>
+    <table id="draftTable">
+        <thead>
+            <tr>
+                <th>Action</th><th>Name</th><th>Email</th><th>Role</th><th>Remove</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-        <div>
-            <label>Organization City*</label>
-            <input type="text" name="orgCity" required>
-        </div>
-
-        <div>
-            <label>Organization Country*</label>
-            <input type="text" name="orgCountry" required>
-        </div>
-
-        <div>
-            <label>User Role*</label>
-            <select name="role">
-                <option value="Team Member">Team Member</option>
-                <option value="Leader">Leader</option>
-            </select>
-        </div>
-
-        <div>
-            <label>First Name*</label>
-            <input type="text" name="firstName" required>
-        </div>
-
-        <div>
-            <label>Last Name*</label>
-            <input type="text" name="lastName" required>
-        </div>
-
-        <div>
-            <label>18 years or older?*</label>
-            <select name="isAdult">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Email (3DEXP ID)*</label>
-            <input type="email" name="email" required>
-        </div>
-
-        <div class="full">
-            <label>User Country*</label>
-            <input type="text" name="userCountry" required>
-        </div>
-
-        <button type="submit" id="submitBtn" style="background: var(--success);">Submit Member</button>
-    </form>
-    <div id="status"></div>
+    <button id="submitAll" class="btn-submit" onclick="submitToSheet()">Submit All Members to Google Sheet</button>
 </div>
 
 <script>
-    // 1. UPDATE THIS URL AFTER DEPLOYING APPS SCRIPT
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyF49Z4fyG1sgFaEvqrZ4ZU_Fpf47RLPwUluXFnszyKHAfei9tIJj0Qwf9tq7Ym_ZJ8/exec";
+    let draftList = [];
+    let currentAction = 'New';
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxECcWtZ9BSyWsuRVmh5S3q_qIC8yVXKaF6v9JvfMsGwQgJCh-9hYmpSWzRp2mciTI-/exec"; 
 
-    function switchTab(type, el) {
-        document.getElementById('action').value = type;
+    function setAction(act, el) {
+        currentAction = act;
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
-        
-        const btn = document.getElementById('submitBtn');
-        if(type === 'New') btn.style.background = 'var(--success)';
-        else if(type === 'Remove') btn.style.background = 'var(--danger)';
-        else btn.style.background = 'var(--primary)';
-        btn.innerText = type + ' Member';
     }
 
-    document.getElementById('teamForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('status');
-        
-        btn.disabled = true;
-        btn.innerText = "Processing...";
+    function addRowToList() {
+        const member = {
+            action: currentAction,
+            teamName: document.getElementById('teamName').value,
+            orgName: document.getElementById('orgName').value,
+            orgCity: document.getElementById('orgCity').value,
+            orgCountry: document.getElementById('orgCountry').value,
+            role: document.getElementById('role').value,
+            firstName: document.getElementById('fName').value,
+            lastName: document.getElementById('lName').value,
+            isAdult: document.getElementById('adult').value,
+            email: document.getElementById('email').value,
+            userCountry: document.getElementById('uCountry').value
+        };
 
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
+        if(!member.email || !member.teamName) return alert("Please fill Team Name and Email at minimum.");
+
+        draftList.push(member);
+        renderTable();
+        
+        // Clear member fields only
+        document.getElementById('fName').value = '';
+        document.getElementById('lName').value = '';
+        document.getElementById('email').value = '';
+    }
+
+    function renderTable() {
+        const tbody = document.querySelector('#draftTable tbody');
+        const submitBtn = document.getElementById('submitAll');
+        tbody.innerHTML = '';
+        
+        draftList.forEach((m, index) => {
+            const row = `<tr>
+                <td><b>${m.action}</b></td>
+                <td>${m.firstName} ${m.lastName}</td>
+                <td>${m.email}</td>
+                <td>${m.role}</td>
+                <td><span class="remove-row" onclick="removeRow(${index})">✖</span></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+
+        submitBtn.style.display = draftList.length > 0 ? 'block' : 'none';
+    }
+
+    function removeRow(index) {
+        draftList.splice(index, 1);
+        renderTable();
+    }
+
+    async function submitToSheet() {
+        const btn = document.getElementById('submitAll');
+        btn.disabled = true;
+        btn.innerText = "Uploading... Please wait.";
 
         try {
-            // Using fetch with 'no-cors' for Google Script redirects
             await fetch(WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ members: draftList })
             });
-            
-            status.style.display = "block";
-            status.style.background = "#d4edda";
-            status.innerHTML = "✅ Success! Sheet updated.";
-            e.target.reset();
-        } catch (err) {
-            status.style.display = "block";
-            status.style.background = "#f8d7da";
-            status.innerHTML = "❌ Error connecting to Sheet.";
+            alert("Successfully uploaded " + draftList.length + " members!");
+            draftList = [];
+            renderTable();
+        } catch (e) {
+            alert("Error uploading. Check console.");
         } finally {
             btn.disabled = false;
-            btn.innerText = "Submit Member";
+            btn.innerText = "Submit All Members to Google Sheet";
         }
-    });
+    }
 </script>
 </body>
 </html>
